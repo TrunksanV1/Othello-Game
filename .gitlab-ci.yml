@@ -1,0 +1,19 @@
+image: gradle:9.1.0-jdk-lts-and-current-alpine
+
+stages:
+  - build
+
+variables:
+  GRADLE_OPTS: "-Dorg.gradle.daemon=false"
+
+before_script:
+  - export GRADLE_USER_HOME=`pwd`/.gradle
+
+build:
+  stage: build
+  script:
+    gradle --build-cache build
+  artifacts:
+    paths:
+      - build/libs/*.jar
+    expire_in: 1 week

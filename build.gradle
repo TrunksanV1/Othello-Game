@@ -1,0 +1,56 @@
+plugins {
+    id 'java'
+    id 'application'
+    id 'org.openjfx.javafxplugin' version '0.1.0'
+}
+
+group 'fr.univ_amu.m1info.board_game_library'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+application {
+    mainModule = 'fr.univ_amu.m1info.board_game_library'
+    mainClass = 'fr.univ_amu.m1info.board_game_library.graphics.javafx.view.OthelloMainMenu'
+    applicationDefaultJvmArgs = ['--enable-native-access=javafx.graphics']
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'fr.univ_amu.m1info.board_game_library.graphics.javafx.view.OthelloMainMenu'
+        attributes 'Automatic-Module-Name': 'fr.univ_amu.m1info.board_game_library'
+    }
+}
+
+javafx {
+    version = '21.0.2'
+    modules = [ 'javafx.controls', 'javafx.fxml' ]
+}
+
+dependencies {
+    // Jackson pour la sérialisation JSON
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.18.2")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.2")
+
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.0")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.10.0")
+
+    testImplementation("org.mockito:mockito-core:5.14.0")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.14.0")
+    testImplementation("net.bytebuddy:byte-buddy:1.15.10")
+    testImplementation("net.bytebuddy:byte-buddy-agent:1.15.10")
+}
+
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+        exceptionFormat "full"
+        showStandardStreams = false
+    }
+    jvmArgs('-Dnet.bytebuddy.experimental=true')
+}
