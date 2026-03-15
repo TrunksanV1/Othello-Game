@@ -22,7 +22,7 @@ import java.util.concurrent.CompletableFuture;
 public class OthelloController implements BoardGameController {
 
     private static final int BOARD_SIZE = 8;
-    private static final int AI_MOVE_DELAY_MS = 500;
+    private static final int AI_MOVE_DELAY_MS = 2000;
 
     private BoardGameView view;
     private final String gameMode;
@@ -33,6 +33,7 @@ public class OthelloController implements BoardGameController {
     private OthelloGame game;
     private OthelloAI ai;
     private boolean isAIThinking = false;
+    private Position lastMove = null;
 
     public OthelloController(String gameMode, String player1Name, String player2Name, String difficulty) {
         this.gameMode = gameMode;
@@ -58,7 +59,11 @@ public class OthelloController implements BoardGameController {
     private void initializeBoard() {
         for (int row = 0; row < BOARD_SIZE; row++) {
             for (int col = 0; col < BOARD_SIZE; col++) {
-                view.setCellColor(row, col, Color.DARKGREEN);
+                if (lastMove != null && lastMove.getRow() == row && lastMove.getColumn() == col) {
+                    view.setCellColor(row, col, Color.RED);
+                } else {
+                    view.setCellColor(row, col, Color.DARKGREEN);
+                }
                 Piece piece = game.getPieceAt(row, col);
                 updateCellPiece(row, col, piece);
             }
@@ -83,7 +88,11 @@ public class OthelloController implements BoardGameController {
     private void hideValidMoves() {
         for (int row = 0; row < BOARD_SIZE; row++) {
             for (int col = 0; col < BOARD_SIZE; col++) {
-                view.setCellColor(row, col, Color.DARKGREEN);
+                if (lastMove != null && lastMove.getRow() == row && lastMove.getColumn() == col) {
+                    view.setCellColor(row, col, Color.RED);
+                } else {
+                    view.setCellColor(row, col, Color.DARKGREEN);
+                }
             }
         }
     }
@@ -118,6 +127,7 @@ public class OthelloController implements BoardGameController {
     }
 
     private void makeMove(int row, int column) {
+        lastMove = new Position(row, column);
         hideValidMoves();
 
         if (game.makeMove(row, column)) {
@@ -294,6 +304,7 @@ public class OthelloController implements BoardGameController {
     }
 
     private void restartGame() {
+        lastMove = null;
         game.reset();
         hideValidMoves();
         initializeBoard();
@@ -488,6 +499,7 @@ public class OthelloController implements BoardGameController {
             String fullState = boardState + "|" + currentPlayer + "|" + startTime;
             game.setGameState(fullState);
 
+            lastMove = null;
             initializeBoard();
             updateScoreLabel();
             updateTurnLabel();
